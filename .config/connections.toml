@@ -1,0 +1,8 @@
+[dev]
+account = "UKORCAB-JOB66700"
+user = "PRATIK"
+password = "${SNOWFLAKE_PASSWORD}"
+role = "ACCOUNTADMIN"
+warehouse = "COMPUTE_WH"
+database = "DEV_DB"
+schema = "PUBLIC"

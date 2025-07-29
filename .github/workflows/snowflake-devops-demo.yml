@@ -22,14 +22,11 @@ jobs:
       run: pip install schemachange
 
     - name: Run schemachange
+      env:
+        SNOWFLAKE_PASSWORD: ${{ secrets.SF_PASSWORD }}
       run: |
-        schemachange -f ./migrations \
-          -a ${{ secrets.SF_ACCOUNT }} \
-          -u ${{ secrets.SNOWFLAKE_USER }} \
-          -p ${{ secrets.SF_PASSWORD }} \
-          -r ${{ secrets.SF_ROLE }} \
-          -w ${{ secrets.SF_WAREHOUSE }} \
-          -d ${{ secrets.SF_DATABASE }} \
-          -c PUBLIC \
-          --create-change-history-table
+        schemachange --config-folder . \
+                    --connection-name dev \
+                    --create-change-history-table
+
 
