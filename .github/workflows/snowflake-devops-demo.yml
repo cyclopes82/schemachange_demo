@@ -25,7 +25,7 @@ jobs:
       env:
         SNOWFLAKE_PASSWORD: ${{ secrets.SF_PASSWORD }}
       run: |
-        schemachange --config-folder . \
+        schemachange --config-folder .config \
                     --connection-name dev \
                     --create-change-history-table
 
