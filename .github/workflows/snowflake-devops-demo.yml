@@ -24,10 +24,12 @@ jobs:
     - name: Run schemachange
       run: |
         schemachange -f ./migrations \
-                     -a ${{ secrets.SNOWFLAKE_ACCOUNT }} \
-                     -u ${{ secrets.SNOWFLAKE_USER }} \
-                     -r ${{ secrets.SNOWFLAKE_ROLE }} \
-                     -w ${{ secrets.SNOWFLAKE_WAREHOUSE }} \
-                     -d ${{ secrets.SNOWFLAKE_DATABASE }} \
-                     -p ${{ secrets.SNOWFLAKE_PASSWORD }} \
-                     --create-change-history-table
+          -a ${{ secrets.SF_ACCOUNT }} \
+          -u ${{ secrets.SNOWFLAKE_USER }} \
+          -p ${{ secrets.SF_PASSWORD }} \
+          -r ${{ secrets.SF_ROLE }} \
+          -w ${{ secrets.SF_WAREHOUSE }} \
+          -d ${{ secrets.SF_DATABASE }} \
+          -c PUBLIC \
+          --create-change-history-table
+
