@@ -1,4 +1,4 @@
-[dev]
+[connections.dev]
 account = "UKORCAB-JOB66700"
 user = "PRATIK"
 password = "${SF_PASSWORD}"
