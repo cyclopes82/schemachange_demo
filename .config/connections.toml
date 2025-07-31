@@ -1,8 +1,8 @@
 [dev]
 account = "UKORCAB-JOB66700"
 user = "PRATIK"
-password = "${SNOWFLAKE_PASSWORD}"
+password = "${SF_PASSWORD}"
 role = "ACCOUNTADMIN"
 warehouse = "COMPUTE_WH"
-database = "DEV_DB"
+database = "DEMO_DB"
 schema = "PUBLIC"
