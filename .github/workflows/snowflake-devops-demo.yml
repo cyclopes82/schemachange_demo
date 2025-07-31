@@ -1,71 +1,43 @@
-name: Deploy to Snowflake
+name: snowflake-devops-demo
 
+# Controls when the action will run. 
 on:
   push:
     branches:
-      - main  # Adjust branch name as needed
+      - main
+    paths:
+      - 'migrations/**'
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
 
 jobs:
-  deploy:
+  deploy-snowflake-changes-job:
     runs-on: ubuntu-latest
 
     steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v2
 
-      - name: Print initial working directory and contents
-        run: |
-          pwd
-          ls -al
-
-      - name: Set up Python 3.10
-        uses: actions/setup-python@v4
+      - name: Use Python 3.8.x
+        uses: actions/setup-python@v2.2.1
         with:
-          python-version: '3.10'
+          python-version: 3.8.x
 
-      - name: Verify Python version & path
-        run: |
-          python --version
-          which python
-
-      - name: Install schemachange
-        run: pip install schemachange
-
-      - name: Show schemachange help (avoid --version error)
-        run: schemachange deploy --help
-
-      - name: Create .config directory
-        run: mkdir -p .config
-
-      - name: Verify .config directory exists
-        run: ls -al .config
-
-      - name: Create connections.toml with GitHub Secrets (no indentation!)
-        run: |
-          cat > .config/connections.toml <<EOF
-          [connections.dev]
-          account = "${{ secrets.SF_ACCOUNT }}"
-          user = "${{ secrets.SF_USER }}"
-          password = "${{ secrets.SF_PASSWORD }}"
-          role = "${{ secrets.SF_ROLE }}"
-          warehouse = "${{ secrets.SF_WAREHOUSE }}"
-          database = "${{ secrets.SF_DATABASE }}"
-          schema = "${{ secrets.SF_SCHEMA }}"
-          EOF
-
-      - name: Show connections.toml content for debug (password masked in logs by GitHub)
-        run: cat .config/connections.toml
-
-      - name: Check file encoding and BOM presence
-        run: |
-          file .config/connections.toml
-          xxd .config/connections.toml | head -8
-
-      - name: Run schemachange migrations with verbose output
+      - name: Run schemachange
         env:
+          SF_ACCOUNT: ${{ secrets.SF_ACCOUNT }}
+          SF_USERNAME: ${{ secrets.SF_USERNAME }}
+          SF_ROLE: ${{ secrets.SF_ROLE }}
+          SF_WAREHOUSE: ${{ secrets.SF_WAREHOUSE }}
+          SF_DATABASE: ${{ secrets.SF_DATABASE }}
           SNOWFLAKE_PASSWORD: ${{ secrets.SF_PASSWORD }}
         run: |
-          schemachange --config-folder .config --connection-name dev --create-change-history-table -v
-
-      - name: Final recursive directory listing for troubleshooting
-        run: ls -lR
+          echo "GITHUB_WORKSPACE: $GITHUB_WORKSPACE"
+          python --version
+          echo "Step 1: Installing schemachange"
+          pip install schemachange==3.7.0
+          
+          echo "Step 2: Running schemachange"
+          schemachange -f $GITHUB_WORKSPACE/migrations -a $SF_ACCOUNT -u $SF_USERNAME -r $SF_ROLE -w $SF_WAREHOUSE -d $SF_DATABASE -c $SF_DATABASE.SCHEMACHANGE.CHANGE_HISTORY --create-change-history-table
