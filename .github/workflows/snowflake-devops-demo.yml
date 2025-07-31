@@ -25,22 +25,23 @@ jobs:
         with:
           python-version: 3.8.x
 
+      - name: Create schemachange config
+        run: |
+          cat > schemachange-config.yml << 'EOF'
+          snowflake:
+            insecure_mode: true
+            disable_ocsp_checks: true
+            ocsp_fail_open: true
+          EOF
+
       - name: Run schemachange
         run: |
           echo "Step 1: Installing schemachange"
           pip install schemachange==3.7.0
           
-          echo "Step 2: Setting SSL bypass"
-          export PYTHONHTTPSVERIFY=0
-          export SSL_DISABLE_CERT_VERIFICATION=1
-          export REQUESTS_CA_BUNDLE=""
-          export CURL_CA_BUNDLE=""
-          
-          echo "Step 3: Running schemachange"
-          schemachange -f $GITHUB_WORKSPACE/migrations -a $SF_ACCOUNT -u $SF_USERNAME -r $SF_ROLE -w $SF_WAREHOUSE -d $SF_DATABASE -c $SF_DATABASE.SCHEMACHANGE.CHANGE_HISTORY --create-change-history-table
+          echo "Step 2: Running schemachange with config"
+          schemachange deploy --config-file schemachange-config.yml -f $GITHUB_WORKSPACE/migrations -a $SF_ACCOUNT -u $SF_USERNAME -r $SF_ROLE -w $SF_WAREHOUSE -d $SF_DATABASE -c $SF_DATABASE.SCHEMACHANGE.CHANGE_HISTORY --create-change-history-table
         env:
-          SNOWFLAKE_INSECURE_MODE: true
-          PYTHONHTTPSVERIFY: 0
           SF_ACCOUNT: ${{ secrets.SF_ACCOUNT }}
           SF_USERNAME: ${{ secrets.SF_USER }}
           SNOWFLAKE_PASSWORD: ${{ secrets.SF_PASSWORD }}
