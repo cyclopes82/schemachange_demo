@@ -25,22 +25,32 @@ jobs:
         with:
           python-version: 3.8.x
 
-      - name: Create schemachange config
-        run: |
-          cat > schemachange-config.yml << 'EOF'
-          snowflake:
-            insecure_mode: true
-            disable_ocsp_checks: true
-            ocsp_fail_open: true
-          EOF
-
-      - name: Run schemachange
+      - name: Run schemachange with SSL bypass
         run: |
           echo "Step 1: Installing schemachange"
           pip install schemachange==3.7.0
           
-          echo "Step 2: Running schemachange with config"
-          schemachange deploy --config-file schemachange-config.yml -f $GITHUB_WORKSPACE/migrations -a $SF_ACCOUNT -u $SF_USERNAME -r $SF_ROLE -w $SF_WAREHOUSE -d $SF_DATABASE -c $SF_DATABASE.SCHEMACHANGE.CHANGE_HISTORY --create-change-history-table
+          echo "Step 2: Creating SSL bypass script"
+          cat > ssl_bypass.py << 'EOF'
+      import ssl
+      import os
+      import sys
+
+      # Disable SSL verification globally
+      ssl._create_default_https_context = ssl._create_unverified_context
+
+      # Set environment variables for Snowflake
+      os.environ['SNOWFLAKE_DISABLE_OCSP_CHECKS'] = 'true'
+      os.environ['SF_OCSP_FAIL_OPEN'] = 'true'
+
+      # Import and run schemachange
+      if __name__ == "__main__":
+          from schemachange.cli import main
+          sys.exit(main())
+      EOF
+          
+          echo "Step 3: Running schemachange with SSL bypass"
+          python ssl_bypass.py -f $GITHUB_WORKSPACE/migrations -a $SF_ACCOUNT -u $SF_USERNAME -r $SF_ROLE -w $SF_WAREHOUSE -d $SF_DATABASE -c $SF_DATABASE.SCHEMACHANGE.CHANGE_HISTORY --create-change-history-table
         env:
           SF_ACCOUNT: ${{ secrets.SF_ACCOUNT }}
           SF_USERNAME: ${{ secrets.SF_USER }}
