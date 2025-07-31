@@ -31,9 +31,6 @@ jobs:
       - name: Install schemachange
         run: pip install schemachange
 
-      - name: Show schemachange version
-        run: schemachange --version
-
       - name: Create .config directory
         run: mkdir -p .config
 
