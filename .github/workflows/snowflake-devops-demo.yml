@@ -36,6 +36,10 @@ jobs:
         database = "${{ secrets.SF_DATABASE }}"
         schema = "${{ secrets.SF_SCHEMA }}"
         EOF
+    
+    - name: Show connections.toml content
+      run: cat .config/connections.toml
+
 
     - name: Run schemachange migrations
       env:

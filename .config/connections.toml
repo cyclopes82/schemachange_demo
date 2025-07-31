@@ -1,8 +1,0 @@
-[connections.dev]
-account = "UKORCAB-JOB66700"
-user = "PRATIK"
-password = "${SF_PASSWORD}"
-role = "ACCOUNTADMIN"
-warehouse = "COMPUTE_WH"
-database = "DEMO_DB"
-schema = "PUBLIC"
