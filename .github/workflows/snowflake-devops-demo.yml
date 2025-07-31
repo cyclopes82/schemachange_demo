@@ -43,15 +43,15 @@ jobs:
       - name: Create connections.toml with GitHub Secrets (no indentation!)
         run: |
           cat > .config/connections.toml <<EOF
-[connections.dev]
-account = "${{ secrets.SF_ACCOUNT }}"
-user = "${{ secrets.SF_USER }}"
-password = "${{ secrets.SF_PASSWORD }}"
-role = "${{ secrets.SF_ROLE }}"
-warehouse = "${{ secrets.SF_WAREHOUSE }}"
-database = "${{ secrets.SF_DATABASE }}"
-schema = "${{ secrets.SF_SCHEMA }}"
-EOF
+          [connections.dev]
+          account = "${{ secrets.SF_ACCOUNT }}"
+          user = "${{ secrets.SF_USER }}"
+          password = "${{ secrets.SF_PASSWORD }}"
+          role = "${{ secrets.SF_ROLE }}"
+          warehouse = "${{ secrets.SF_WAREHOUSE }}"
+          database = "${{ secrets.SF_DATABASE }}"
+          schema = "${{ secrets.SF_SCHEMA }}"
+          EOF
 
       - name: Show connections.toml content for debug (password masked in logs by GitHub)
         run: cat .config/connections.toml
