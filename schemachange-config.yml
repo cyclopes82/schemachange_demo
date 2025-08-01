@@ -1,0 +1,8 @@
+script_dir: migrations
+snowflake_account: ${SF_ACCOUNT}
+snowflake_user: ${SF_USER}
+snowflake_password: ${SF_PASSWORD}
+snowflake_role: ${SF_ROLE}
+snowflake_warehouse: ${SF_WAREHOUSE}
+snowflake_database: ${SF_DATABASE}
+snowflake_schema: ${SF_SCHEMA}
