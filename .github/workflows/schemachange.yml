@@ -1,49 +1,44 @@
-name: Snowflake Database Migrations
+name: Deploy Snowflake Migrations
 
 on:
   push:
-    branches: [ main, develop ]
-  pull_request:
-    branches: [ main ]
-  workflow_dispatch:
+    branches: [main]
 
 jobs:
-  deploy-migrations:
+  deploy:
     runs-on: ubuntu-latest
-    
+
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
-      
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.11'
-        
-    - name: Install schemachange
-      run: |
-        pip install --upgrade pip
-        pip install schemachange==4.0.1
-        
-    - name: Create connections.toml
-      run: |
-        cat > connections.toml << EOF
-        [connections.default]
-        account = "${{ secrets.SF_ACCOUNT }}"
-        user = "${{ secrets.SF_USERNAME }}"
-        password = "${{ secrets.SF_PASSWORD }}"
-        warehouse = "${{ secrets.SF_WAREHOUSE }}"
-        database = "${{ secrets.SF_DATABASE }}"
-        schema = "${{ secrets.SF_SCHEMA }}"
-        EOF
-        echo "Created connections.toml file"
-        ls -la connections.toml
-        
-    - name: Run schemachange
-      run: |
-        echo "Current directory contents:"
-        ls -la
-        echo "Running schemachange deploy..."
-        schemachange deploy \
-          --root-folder migrations \
-          --verbose
+      - name: Check out code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install schemachange
+        run: |
+          pip install --upgrade pip
+          pip install schemachange
+
+      - name: Run schemachange
+        env:
+          SNOWFLAKE_ACCOUNT: ${{ secrets.SF_ACCOUNT }}
+          SNOWFLAKE_USER: ${{ secrets.SF_USERNAME }}      # Use SF_USERNAME to match your secret
+          SNOWFLAKE_PASSWORD: ${{ secrets.SF_PASSWORD }}
+          SNOWFLAKE_ROLE: ${{ secrets.SF_ROLE }}
+          SNOWFLAKE_DATABASE: ${{ secrets.SF_DATABASE }}
+          SNOWFLAKE_SCHEMA: ${{ secrets.SF_SCHEMA }}
+          SNOWFLAKE_WAREHOUSE: ${{ secrets.SF_WAREHOUSE }}
+        run: |
+          schemachange \
+            --account $SNOWFLAKE_ACCOUNT \
+            --user $SNOWFLAKE_USER \
+            --password $SNOWFLAKE_PASSWORD \
+            --role $SNOWFLAKE_ROLE \
+            --database $SNOWFLAKE_DATABASE \
+            --schema $SNOWFLAKE_SCHEMA \
+            --warehouse $SNOWFLAKE_WAREHOUSE \
+            -f migrations/ \
+            --create-change-history-table
