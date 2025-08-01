@@ -1,0 +1,11 @@
+[connections.snowflake]
+account = "${SF_ACCOUNT}"
+user = "${SF_USER}"
+password = "${SF_PASSWORD}"
+role = "${SF_ROLE}"
+warehouse = "${SF_WAREHOUSE}"
+database = "${SF_DATABASE}"
+schema = "${SF_SCHEMA}"
+
+[config]
+script_dir = "migrations"
