@@ -19,6 +19,12 @@ jobs:
       - name: Install schemachange
         run: pip install schemachange
 
+      - name: Debug SF_USER
+        run: echo "User is $SF_USER"
+        env:
+          SF_USER: ${{ secrets.SF_USER }}
+
+
       - name: Run schemachange
         env:
           SF_ACCOUNT: ${{ secrets.SF_ACCOUNT }}
